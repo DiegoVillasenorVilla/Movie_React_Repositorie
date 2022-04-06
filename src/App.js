@@ -1,6 +1,8 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import './App.css';
-import SearchIcon from "./search.svg"
+import SearchIcon from "./search.svg";
+import MovieCard from './MovieCard';
+
 
 //API key: 316b61d2
 
@@ -16,12 +18,17 @@ const movie1 = {
 
 const App = () => {
 
+  const [movies, setMovies] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
     const searchMovies = async (title) =>  {
         const response = await fetch(`${API_URL}&s=${title}`);
         const data = await response.json();
-  
-        console.log(data)
-    }
+
+        setMovies(data.Search);
+
+       console.log(data);
+    };
 
   useEffect(()=>{
     searchMovies('Batman')
@@ -32,36 +39,36 @@ const App = () => {
       <h1>Movie City</h1>
 
       <div className='search'>
-          <input 
-            placeholder="Search a movie"
-            value="Batman"
-            onChange={()=> {} }
-          />
-          <img  
-            src={SearchIcon} 
-            alt="search"
-            onClick={ ()=> {} }
-         />
+        <input 
+          placeholder="Search a movie"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value) }
+        />
+        <img  
+          src={SearchIcon} 
+          alt="search"
+          onClick={ () => searchMovies(searchTerm) }
+        />
       </div>
-
-    <div className='container'>
-        <div className='movie'>
-           <div>
-               <p>{movie1.Year}</p>
-           </div>
-           <div>
-               <img src={movie1.Poster !=='N/A' ? movie1.Poster:"https://via.placeholder.com/400"} alt={movie1.Title}/>
-           </div>
-
-           <div>
-               <span>{movie1.Type}</span>
-               <h3>{movie1.Title}</h3>
-           </div>
-        </div>
-    </div>
        
-    </div>
+      {movies?.length > 0 ? (
+        <div className='container'>
+          {movies.map((movie) => (
+            <MovieCard movie={movie} />
+           ))
+          }
+             
+        </div>
+        ) : (
+          <div>
+           <h2> No found any movie with this name</h2>
+          </div>
+        )
+      }
+        
+    </div> 
+       
   );
-}
+};
 
 export default App;
